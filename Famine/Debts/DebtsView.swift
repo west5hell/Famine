@@ -8,8 +8,24 @@
 import SwiftUI
 
 struct DebtsView: View {
+    @State private var present = false
+
     var body: some View {
-        Text("Here's My Debts")
+        NavigationStack {
+            ZStack {
+                ScrollView {
+
+                }
+
+                PlusNewButton(present: $present)
+
+            }  //  ZStack
+            .navigationTitle("Debts")
+            .sheet(isPresented: $present) {
+                Text("Add Debts")
+            }
+
+        }  //  NavigationStack
     }
 }
 
