@@ -12,12 +12,12 @@ struct ContentView: View {
 
     var body: some View {
         TabView(selection: $selectedTab) {
-            Tab("Lend Out", systemImage: "arrowshape.up.fill", value: 0) {
-                Text("Lend Out")
+            Tab("Debts", systemImage: "arrowshape.down.fill", value: 0) {
+                Text("My Debts")
             }
 
-            Tab("Borrow In", systemImage: "arrowshape.down.fill", value: 1) {
-                Text("Borrow In")
+            Tab("Loans", systemImage: "arrowshape.up.fill", value: 1) {
+                Text("My Loans")
             }
         }
         .tint(selectedTab == 0 ? .red : .green)
