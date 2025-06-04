@@ -8,14 +8,20 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var selectedTab = 0
+
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        TabView(selection: $selectedTab) {
+            Tab("Lend Out", systemImage: "arrowshape.up.fill", value: 0) {
+                Text("Lend Out")
+            }
+
+            Tab("Borrow In", systemImage: "arrowshape.down.fill", value: 1) {
+                Text("Borrow In")
+            }
         }
-        .padding()
+        .tint(selectedTab == 0 ? .red : .green)
+        .tabViewStyle(.sidebarAdaptable)
     }
 }
 
