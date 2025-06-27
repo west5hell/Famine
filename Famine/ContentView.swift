@@ -5,23 +5,19 @@
 //  Created by Pongt Chia on 31/12/24.
 //
 
+import SwiftData
 import SwiftUI
 
 struct ContentView: View {
-    @State private var selectedTab = 0
+
+    var localCurrencyCode: String {
+        Locale.current.currency?.identifier ?? "USD"
+    }
 
     var body: some View {
-        TabView(selection: $selectedTab) {
-            Tab("Debts", systemImage: "arrowshape.down.fill", value: 0) {
-                DebtsView()
-            }
+        VStack {
 
-            Tab("Loans", systemImage: "arrowshape.up.fill", value: 1) {
-                LoansView()
-            }
         }
-        .tint(selectedTab == 0 ? .red : .green)
-        .tabViewStyle(.sidebarAdaptable)
     }
 }
 
