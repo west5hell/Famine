@@ -1,32 +1,29 @@
 //
-//  FamineRowView.swift
+//  DebtRowView.swift
 //  Famine
 //
-//  Created by Pongt Chia on 27/6/25.
+//  Created by Pongt Chia on 30/6/25.
 //
 
 import SwiftUI
 
-struct FamineRowView: View {
+struct DebtRowView: View {
+    var debt: Debt
+    
     var body: some View {
         HStack {
             HStack {
                 Image(systemName: "person.fill")
                     .font(.largeTitle)
-                Text("John Doe")
+                Text(debt.name)
             }
 
             Spacer()
 
             VStack(alignment: .trailing, spacing: 8) {
+                Text(debt.currentAmount, format: .localCurrencySimple)
                 Text(
-                    10_000,
-                    format: .currency(code: localCurrencyCode).locale(
-                        Locale.current
-                    )
-                )
-                Text(
-                    Date(),
+                    debt.displayDate,
                     format: .dateTime.year().month(.twoDigits).day(.twoDigits)
                 )
             }
@@ -37,12 +34,9 @@ struct FamineRowView: View {
         .shadow(radius: 1)
         .padding(.horizontal)
     }
-
-    var localCurrencyCode: String {
-        Locale.current.currency?.identifier ?? "USD"
-    }
+    
 }
 
-#Preview {
-    FamineRowView()
-}
+//#Preview {
+//    DebtRowView()
+//}

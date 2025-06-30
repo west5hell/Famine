@@ -1,14 +1,15 @@
 //
-//  FamineHistoryRowView.swift
+//  TransactionRowView.swift
 //  Famine
 //
-//  Created by Pongt Chia on 28/6/25.
+//  Created by Pongt Chia on 30/6/25.
 //
 
 import SwiftUI
 
-struct FamineHistoryRowView: View {
-
+struct TransactionRowView: View {
+    var transaction: Transaction
+    
     var body: some View {
         HStack {
             HStack(spacing: 16) {
@@ -31,13 +32,8 @@ struct FamineHistoryRowView: View {
 
             Spacer()
 
-            Text(
-                10_000,
-                format: .currency(code: localCurrencyCode).locale(
-                    Locale.current
-                )
-            )
-            .font(.headline)
+            transaction.amountText
+                .font(.headline)
         }
         .padding()
         .background(.regularMaterial)
@@ -46,11 +42,8 @@ struct FamineHistoryRowView: View {
         .padding(.horizontal)
     }
 
-    var localCurrencyCode: String {
-        Locale.current.currency?.identifier ?? "USD"
-    }
 }
 
-#Preview {
-    FamineHistoryRowView()
-}
+//#Preview {
+//    TransactionRowView()
+//}

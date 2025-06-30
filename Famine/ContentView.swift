@@ -9,25 +9,46 @@ import SwiftData
 import SwiftUI
 
 struct ContentView: View {
-    @State private var isPresented = false
-
-    var localCurrencyCode: String {
-        Locale.current.currency?.identifier ?? "USD"
-    }
+    @Environment(\.modelContext) private var modelContext
+    @Query(sort: \Debt.updatedAt, order: .reverse) private var debts: [Debt]
+    @State private var selectedDebt: Debt?
 
     var body: some View {
         NavigationStack {
             ScrollView {
-                LazyVStack(spacing: 16) {
-                    ForEach(0..<10, id: \.self) { _ in
-                        FamineRowView()
-                    }
-                    .onTapGesture {
-                        isPresented.toggle()
-                    }
+                LazyVStack {
+                    ForEach(debts, content: { debt in
+                        DebtRowView(debt: debt)
+                        .onTapGesture {
+                            selectedDebt = debt
+                        }
+                    })
                 }
-                .sheet(isPresented: $isPresented) {
-                    FamineDetailView()
+                .sheet(item: $selectedDebt) { debt in
+//                    VStack(alignment: .leading) {
+//                        Text("History")
+//                            .font(.largeTitle.bold())
+//                            .padding(.leading, 16)
+//                        ScrollView {
+//                            LazyVStack {
+//                                ForEach(debt.transactions) { transaction in
+//                                    Text(transaction.amount, format: .number)
+//                                }
+//                            }
+//                        }
+//                    }
+                    DebtDetailView(debt: debt)
+                }
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button("Add", systemImage: "plus") {
+                            let james = Debt(action: .borrowedFrom, name: "James")
+                            let borrowed = Transaction(amount: 20_000, startDate: Calendar.current.date(byAdding: .day, value: -5, to: Date())!)
+                            james.appendTransacation(borrowed)
+                            
+                            modelContext.insert(james)
+                        }
+                    }
                 }
             }
             .navigationTitle("Famine")
@@ -37,4 +58,5 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
+        .modelContainer(Debt.preview)
 }
