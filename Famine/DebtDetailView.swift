@@ -26,10 +26,6 @@ struct DebtDetailView: View {
                                 $0.startDate > $1.startDate
                             })
                         ) { transaction in
-//                            Text(
-//                                transaction.amount,
-//                                format: .currency(code: "USD")
-//                            )
                             TransactionRowView(transaction: transaction)
                         }
                     }
