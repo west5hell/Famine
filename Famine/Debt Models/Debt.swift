@@ -15,6 +15,7 @@ class Debt {
 
     var action: DebtAction
     var name: String
+    var status: DebtStatus
 
     @Relationship(inverse: \Transaction.debt)
     var transactions: [Transaction] = []
@@ -24,12 +25,14 @@ class Debt {
     init(
         action: DebtAction,
         name: String,
+        status: DebtStatus = .active,
         transactions: [Transaction] = [],
         createdAt: Date = Date(),
         updatedAt: Date = Date()
     ) {
         self.action = action
         self.name = name
+        self.status = status
         self.transactions = transactions
         self.createdAt = createdAt
         self.updatedAt = updatedAt
@@ -107,8 +110,12 @@ extension Transaction {
 enum DebtAction: Codable, CaseIterable {
     case lentTo
     case borrowedFrom
-    case payOff
-    case restore
+}
+
+enum DebtStatus: Codable, CaseIterable {
+    case active
+    case paidoff
+    case archived
 }
 
 enum TransactionAction: Codable, CaseIterable {

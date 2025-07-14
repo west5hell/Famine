@@ -13,8 +13,19 @@ struct TransactionRowView: View {
     var body: some View {
         HStack {
             HStack(spacing: 16) {
-                Image(systemName: "tray.and.arrow.up")
-                    .font(.largeTitle)
+//                Image(systemName: "tray.and.arrow.up")
+//                    .font(.largeTitle)
+                switch transaction.action {
+                case .initial:
+                    Image(systemName: "chart.line.flattrend.xyaxis.circle")
+                        .font(.largeTitle)
+                case .increase:
+                    Image(systemName: "chart.line.uptrend.xyaxis.circle")
+                        .font(.largeTitle)
+                case .decrease:
+                    Image(systemName: "chart.line.downtrend.xyaxis.circle")
+                        .font(.largeTitle)
+                }
 
                 VStack(alignment: .leading, spacing: 8) {
                     Text(
@@ -24,9 +35,6 @@ struct TransactionRowView: View {
                         )
                     )
                     .foregroundStyle(.secondary)
-
-                    Text("I received")
-                        .font(.title2)
                 }
             }
 
