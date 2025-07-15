@@ -15,9 +15,11 @@ struct DebtRowView: View {
             HStack {
                 Image(
                     systemName: debt.action == .lentTo
-                        ? "person.fill.badge.minus" : "person.fill.badge.plus"
+                        ? "person.badge.minus" : "person.badge.plus"
                 )
                 .font(.largeTitle)
+                .symbolRenderingMode(.multicolor)
+                
                 Image(
                     systemName: debt.action == .lentTo
                         ? "arrowshape.right" : "arrowshape.left"
