@@ -24,6 +24,27 @@ extension Debt {
         levi.appendTransacation(lentMore)
         
         container.mainContext.insert(levi)
+        
+        let sampleData: [(String, DebtAction, Decimal, Int)] = [
+            ("Alice", .lentTo, 10_000, -10),
+            ("Bob", .borrowedFrom, 5_000, -5),
+            ("Charlie", .lentTo, 12_500, -15),
+            ("Diana", .borrowedFrom, 7_800, -20),
+            ("Ethan", .lentTo, 3_000, -3),
+            ("Fiona", .borrowedFrom, 4_200, -8),
+            ("George", .lentTo, 9_600, -12),
+            ("Hannah", .borrowedFrom, 6_500, -18),
+            ("Ivan", .lentTo, 11_000, -7),
+            ("Julia", .borrowedFrom, 8_300, -14)
+        ]
+
+        for (name, action, amount, dayOffset) in sampleData {
+            let debt = Debt(action: action, name: name)
+            let date = Calendar.current.date(byAdding: .day, value: dayOffset, to: Date())!
+            let transaction = Transaction(amount: amount, startDate: date)
+            debt.appendTransacation(transaction)
+            container.mainContext.insert(debt)
+        }
 
         return container
     }
