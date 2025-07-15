@@ -13,26 +13,35 @@ struct DebtAddView: View {
 
     @State private var name: String = ""
     @State private var amount: Decimal = 0
+    @State private var amountString = ""
     @State private var startDate: Date = Date()
     @State private var showAlert = false
     
     var currentDebt: Debt? = nil
+    var debtAction: DebtAction = .lentTo
     var transactionAction: TransactionAction = .initial
 
     var body: some View {
         VStack {
             Form {
+                
                 Section {
                     if currentDebt == nil {
-                        TextField("name", text: $name)
+                        LabeledContent {
+                            TextField("name", text: $name)
+                                .multilineTextAlignment(.trailing)
+                        } label: {
+                            Text("Name")
+                        }
+                    }
+                    
+                    
+                    LabeledContent {
+                        AmountTextField(decimalValue: $amount)
+                    } label: {
+                        Text("Amount")
                     }
 
-                    TextField(
-                        "amount",
-                        value: $amount,
-                        format: .localCurrencySimple
-                    )
-                    .keyboardType(.decimalPad)
 
                     DatePicker(
                         "Start Date",
@@ -40,8 +49,16 @@ struct DebtAddView: View {
                         in: ...Date(),
                         displayedComponents: .date
                     )
+                } header: {
+                    switch debtAction {
+                    case .lentTo:
+                        Text("Lent To")
+                    case .borrowedFrom:
+                        Text("Borrowed From")
+                    }
                 }
             }
+            .headerProminence(.increased)
 
             Button("Save") {
                 showAlert = true
@@ -54,9 +71,7 @@ struct DebtAddView: View {
                 save()
             }
             
-            Button("Cancel", role: .cancel) {
-                
-            }
+            Button("Cancel", role: .cancel) {}
         }
     }
     
@@ -71,7 +86,7 @@ struct DebtAddView: View {
             return
         }
         
-        let debt = Debt(action: .lentTo, name: name)
+        let debt = Debt(action: debtAction, name: name)
         let lent = Transaction(amount: amount, startDate: startDate)
         debt.appendTransacation(lent)
 
