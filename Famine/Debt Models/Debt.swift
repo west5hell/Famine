@@ -112,6 +112,34 @@ enum DebtAction: Codable, CaseIterable {
     case borrowedFrom
 }
 
+extension DebtAction {
+    var display: String {
+        switch self {
+        case .lentTo:
+            "Lent to"
+        case .borrowedFrom:
+            "Borrowed from"
+        }
+    }
+    
+    var color: Color {
+        switch self {
+        case .lentTo:
+            Color.lent
+        case .borrowedFrom:
+            Color.borrowed
+        }
+    }
+    var reversedColor: Color {
+        switch self {
+        case .lentTo:
+            Color.borrowed
+        case .borrowedFrom:
+            Color.lent
+        }
+    }
+}
+
 enum DebtStatus: Codable, CaseIterable {
     case active
     case paidoff

@@ -24,10 +24,8 @@ struct DebtRowView: View {
                     systemName: debt.action == .lentTo
                         ? "arrowshape.right" : "arrowshape.left"
                 )
-                .foregroundStyle(
-                    debt.action == DebtAction.lentTo
-                        ? Color.lent : Color.borrowed
-                )
+                .foregroundStyle(debt.action.color)
+                
                 Text(debt.name)
                     .font(.title.italic())
             }
@@ -36,9 +34,8 @@ struct DebtRowView: View {
 
             VStack(alignment: .trailing, spacing: 8) {
                 Text(debt.currentAmount, format: .localCurrencySimple)
-                    .foregroundStyle(
-                        debt.action == .lentTo ? Color.lent : Color.borrowed
-                    )
+                    .foregroundStyle(debt.action.color)
+                
                 Text(
                     debt.displayDate,
                     format: .dateTime.year().month(.twoDigits).day(.twoDigits)

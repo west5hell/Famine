@@ -14,52 +14,95 @@ struct DebtDetailView: View {
     @State private var isIncrement = false
     @State private var isDecrement = false
     @State private var payOff = false
+    
+    @State private var isArchive  = false
+    @State private var isDelete = false
 
     var debt: Debt
+    
+    private var displayTitle: String {
+        debt.action.display + " " + debt.name
+    }
 
     var body: some View {
         NavigationStack {
             VStack(alignment: .leading, spacing: 16) {
-                Text(debt.currentAmount, format: .localCurrencySimple)
-                    .foregroundStyle(
-                        debt.action == .lentTo ? Color.lent : Color.borrowed
-                    )
-                    .font(.largeTitle.bold())
-                    .padding(.leading, 16)
+                VStack(alignment: .leading) {
+                    switch debt.action {
+                    case .lentTo:
+                        HStack {
+                            Text("I lent to \(debt.name) since")
+                            Text(debt.createdAt, format: .dateTime.year().month(.twoDigits).day(.twoDigits))
+                        }
+                        .font(.body.italic())
+                        .opacity(0.5)
+                        .shadow(radius: 1)
+                    case .borrowedFrom:
+                        HStack {
+                            Text("I borrowed from \(debt.name) since")
+                            Text(debt.createdAt, format: .dateTime.year().month(.twoDigits).day(.twoDigits))
+                        }
+                        .font(.body.italic())
+                        .opacity(0.5)
+                        .shadow(radius: 1)
+                    }
+                    Text(debt.currentAmount, format: .localCurrencySimple)
+                }
+                .foregroundStyle(debt.action.color)
+                .font(.largeTitle.bold())
+                .padding(.leading, 16)
 
                 HStack {
-                    Spacer()
                     Button {
                         isIncrement.toggle()
                     } label: {
                         VStack {
                             Image(systemName: "arrowshape.up.fill")
-                            Text("Increment")
+                                .font(.title)
+                                .foregroundStyle(debt.action.color)
+                                .padding(.bottom, 2)
+                            switch debt.action {
+                            case .lentTo:
+                                Text("Lend More")
+                            case .borrowedFrom:
+                                Text("Borrow More")
+                            }
                         }
                     }
                     .sheet(isPresented: $isIncrement) {
-                        DebtAddView(currentDebt: debt, transactionAction: .increase)
-                            .presentationDetents([.medium])
+                        TransactionAddView()
                     }
+                    
+                    Spacer()
 
                     Button {
                         isDecrement.toggle()
                     } label: {
                         VStack {
                             Image(systemName: "arrowshape.down")
-                            Text("Decrement")
+                                .font(.title)
+                                .foregroundStyle(debt.action.reversedColor)
+                                .padding(.bottom, 2)
+                            switch debt.action {
+                            case .lentTo:
+                                Text("Receive")
+                            case .borrowedFrom:
+                                Text("Repay")
+                            }
                         }
                     }
                     .sheet(isPresented: $isDecrement) {
-                        DebtAddView(currentDebt: debt, transactionAction: .decrease)
-                            .presentationDetents([.medium])
+                        TransactionAddView()
                     }
+                    Spacer()
 
                     Button {
                         payOff = true
                     } label: {
                         VStack {
                             Image(systemName: "checkmark.circle.fill")
+                                .font(.title)
+                                .padding(.bottom, 2)
                             Text("Pay Off")
                         }
                     }
@@ -70,12 +113,15 @@ struct DebtDetailView: View {
                         Button("Pay Off Entire Debt") {
 
                         }
-                        Button("Cancel", role: .cancel) {
-
-                        }
+                        Button("Cancel", role: .cancel) {}
                     }
-                    Spacer()
                 }
+                .font(.title3)
+                .foregroundStyle(Color.primary)
+                .padding()
+                .background(.regularMaterial)
+                .clipShape(.rect(cornerRadius: 10))
+                .padding()
 
                 Text("History")
                     .font(.largeTitle.bold())
@@ -100,12 +146,31 @@ struct DebtDetailView: View {
                         dismiss()
                     } label: {
                         Image(systemName: "chevron.down")
-                            .foregroundStyle(
-                                debt.action == .lentTo
-                                    ? Color.lent : Color.borrowed
-                            )
+                            .foregroundStyle(debt.action.color)
                     }
-                    .tint(.primary)
+                }
+            
+                ToolbarItemGroup(placement: .topBarTrailing) {
+                    Button("Archive", systemImage: "archivebox") {
+                        isArchive.toggle()
+                    }
+                    .confirmationDialog("Archive this Debt", isPresented: $isArchive) {
+                        Button("Archive") {
+                            
+                        }
+                        Button("Cancel", role: .cancel) {}
+                    }
+                    
+                    Button("Delete", systemImage: "trash") {
+                        isDelete.toggle()
+                    }
+                    .tint(Color.red)
+                    .confirmationDialog("Delete this Debt", isPresented: $isDelete) {
+                        Button("Delete", role: .destructive) {
+                            
+                        }
+                        Button("Cancel", role: .cancel) {}
+                    }
                 }
             }
         }
@@ -113,5 +178,6 @@ struct DebtDetailView: View {
 }
 
 #Preview {
-    DebtDetailView(debt: Debt(action: .borrowedFrom, name: "Bosh"))
+    DebtDetailView(debt: Debt(action: .lentTo, name: "Bosh"))
+    DebtDetailView(debt: Debt(action: .borrowedFrom, name: "Ellish"))
 }
