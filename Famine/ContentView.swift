@@ -15,6 +15,7 @@ struct ContentView: View {
     @State private var addNewDebt: Bool = false
     @State private var isLentTo = false
     @State private var isBorrowedFrom = false
+    @State private var showSettings = false
 
     private var totalLent: Decimal {
         debts
@@ -108,13 +109,16 @@ struct ContentView: View {
                             Button("Cancel", role: .cancel) {}
                         }
                     )
+                    .sheet(isPresented: $showSettings, content: {
+                        SettingsView()
+                    })
                     .toolbar {
                         ToolbarItemGroup(placement: .topBarTrailing) {
                             Button("Add", systemImage: "plus") {
                                 addNewDebt.toggle()
                             }
                             Button("Setting", systemImage: "gearshape") {
-
+                                showSettings.toggle()
                             }
                         }
                     }
