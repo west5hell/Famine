@@ -105,6 +105,21 @@ extension Transaction {
             return Text(amount, format: .localCurrencySimple)
         }
     }
+    
+    var displayTitle: String {
+        switch (self.debt?.action, self.action) {
+        case (.lentTo, .initial), (.lentTo, .increase):
+            "I Lent To"
+        case (.borrowedFrom, .initial), (.borrowedFrom, .increase):
+            "I Borrowed From"
+        case (.lentTo, .decrease):
+            "I Received"
+        case (.borrowedFrom, .decrease):
+            "I Repaied"
+        case (_, _):
+            ""
+        }
+    }
 }
 
 enum DebtAction: Codable, CaseIterable {
@@ -150,4 +165,17 @@ enum TransactionAction: Codable, CaseIterable {
     case initial
     case increase
     case decrease
+}
+
+extension TransactionAction {
+    var displayIcon: Image {
+        switch self {
+        case .initial:
+            Image(systemName: "chart.line.flattrend.xyaxis.circle")
+        case .increase:
+            Image(systemName: "chart.line.uptrend.xyaxis.circle")
+        case .decrease:
+            Image(systemName: "chart.line.downtrend.xyaxis.circle")
+        }
+    }
 }
