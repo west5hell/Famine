@@ -23,24 +23,20 @@ struct AmountTextField: View {
     }()
     
     var body: some View {
-        VStack(spacing: 0) {
-            TextField("0", text: $textValue)
-                .keyboardType(.decimalPad)
-//                .textFieldStyle(.roundedBorder)
-                .font(.title3)
-                .multilineTextAlignment(.trailing)
-                .onChange(of: textValue) { oldValue, newValue in
-                    handleTextChange(newValue)
-                }
-        }
-        .toolbar {
-            ToolbarItemGroup(placement: .keyboard) {
-                Spacer()
-                Button("Done") {
-                    hideKeyboard()
+        TextField("0", text: $textValue)
+            .keyboardType(.decimalPad)
+            .multilineTextAlignment(.trailing)
+            .onChange(of: textValue) { oldValue, newValue in
+                handleTextChange(newValue)
+            }
+            .toolbar {
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Done") {
+                        hideKeyboard()
+                    }
                 }
             }
-        }
     }
     
     private func handleTextChange(_ newValue: String) {
