@@ -70,7 +70,8 @@ struct DebtDetailView: View {
                         }
                     }
                     .sheet(isPresented: $isIncrement) {
-                        TransactionAddView()
+                        TransactionAddView(currentDebt: debt, transactionAction: .increase)
+                            .presentationDetents([.medium])
                     }
                     
                     Spacer()
@@ -92,7 +93,8 @@ struct DebtDetailView: View {
                         }
                     }
                     .sheet(isPresented: $isDecrement) {
-                        TransactionAddView()
+                        TransactionAddView(currentDebt: debt, transactionAction: .decrease)
+                            .presentationDetents([.medium])
                     }
                     Spacer()
 
@@ -135,6 +137,7 @@ struct DebtDetailView: View {
                             })
                         ) { transaction in
                             TransactionRowView(transaction: transaction)
+                                .padding(.bottom, 16)
                         }
                     }
                 }
@@ -178,6 +181,9 @@ struct DebtDetailView: View {
 }
 
 #Preview {
-    DebtDetailView(debt: Debt(action: .lentTo, name: "Bosh"))
+    DebtDetailView(debt: Debt(action: .lentTo, name: "Bosh", createdAt: Calendar.current.date(byAdding: .day, value: -30, to: Date())!))
+}
+
+#Preview {
     DebtDetailView(debt: Debt(action: .borrowedFrom, name: "Ellish"))
 }
