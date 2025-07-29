@@ -49,6 +49,20 @@ extension Debt {
     var displayDate: Date {
         transactions.compactMap(\.startDate).max() ?? createdAt
     }
+    
+    var sortedTransactions: [Transaction] {
+        let sorted = transactions.sorted(by: { $0.startDate > $1.startDate })
+        
+        if let index = sorted.firstIndex(where: { $0.action == .initial }), index != sorted.count - 1 {
+            let initial = sorted[index]
+            initial.action = .increase
+            
+            let nonInitial = sorted[sorted.count - 1]
+            nonInitial.action = .initial
+        }
+        
+        return sorted
+    }
 }
 
 extension Debt {
@@ -62,20 +76,6 @@ extension Debt {
         transactions.removeAll { item in
             item.transactionID == transaction.transactionID
         }
-    }
-    
-    func sortedTransactions() -> [Transaction] {
-        transactions.sort(by: { $0.startDate > $1.startDate })
-        
-        if let index = transactions.firstIndex(where: { $0.action == .initial }), index != transactions.count - 1 {
-            let initial = transactions[index]
-            initial.action = .increase
-            
-            let nonInitial = transactions[transactions.count - 1]
-            nonInitial.action = .initial
-        }
-        
-        return transactions
     }
 }
 

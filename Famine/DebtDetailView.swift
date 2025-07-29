@@ -160,7 +160,7 @@ struct DebtDetailView: View {
 
                 List {
                     ForEach(
-                        debt.sortedTransactions()
+                        debt.sortedTransactions
                     ) { transaction in
                         TransactionRowView(transaction: transaction)
                             .listRowSeparator(.hidden)
