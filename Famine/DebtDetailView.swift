@@ -158,18 +158,27 @@ struct DebtDetailView: View {
                     .font(.largeTitle.bold())
                     .padding(.leading, 16)
 
-                ScrollView {
-                    LazyVStack {
-                        ForEach(
-                            debt.transactions.sorted(by: {
-                                $0.startDate > $1.startDate
-                            })
-                        ) { transaction in
-                            TransactionRowView(transaction: transaction)
-                                .padding(.bottom, 16)
-                        }
+                List {
+                    ForEach(
+                        debt.sortedTransactions()
+                    ) { transaction in
+                        TransactionRowView(transaction: transaction)
+                            .listRowSeparator(.hidden)
+                            .swipeActions(edge: .trailing) {
+                                if transaction.action != .initial {
+                                    Button(role: .destructive) {
+                                        debt.removeTransaction(transaction)
+                                    } label: {
+                                        Label("Delete", systemImage: "trash")
+                                    }
+                                }
+                            }
+                            .onTapGesture {
+
+                            }
                     }
                 }
+                .listStyle(.plain)
             }
             .navigationTitle(debt.name)
             .alert("Delete this Debt?", isPresented: $deleteConfirm) {
@@ -223,7 +232,7 @@ struct DebtDetailView: View {
     }
 }
 
-#Preview {
+#Preview("borrow") {
     let levi = Debt(action: .borrowedFrom, name: "Levi")
     let lent = Transaction(
         amount: 10_000,
@@ -238,7 +247,7 @@ struct DebtDetailView: View {
         amount: 5_000,
         startDate: Calendar.current.date(
             byAdding: .day,
-            value: -6,
+            value: -16,
             to: Date()
         )!,
         action: .increase
@@ -248,7 +257,7 @@ struct DebtDetailView: View {
     return DebtDetailView(debt: levi)
 }
 
-#Preview {
+#Preview("lend") {
     let levi = Debt(action: .lentTo, name: "Levi")
     let lent = Transaction(
         amount: 10_000,
