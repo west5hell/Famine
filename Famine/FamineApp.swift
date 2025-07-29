@@ -6,12 +6,14 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @main
 struct FamineApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .modelContainer(for: Debt.self)
         }
     }
 }
