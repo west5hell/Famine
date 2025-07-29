@@ -14,14 +14,32 @@ struct DebtDetailView: View {
     @State private var isIncrement = false
     @State private var isDecrement = false
     @State private var payOff = false
-    
-    @State private var isArchive  = false
+
+    @State private var isArchive = false
     @State private var isDelete = false
 
     var debt: Debt
-    
+
     private var displayTitle: String {
         debt.action.display + " " + debt.name
+    }
+
+    private var increaseText: String {
+        switch debt.action {
+        case .lentTo:
+            "Lend More"
+        case .borrowedFrom:
+            "Borrow More"
+        }
+    }
+
+    private var decreaseText: String {
+        switch debt.action {
+        case .lentTo:
+            "Receive"
+        case .borrowedFrom:
+            "Repay"
+        }
     }
 
     var body: some View {
@@ -32,7 +50,12 @@ struct DebtDetailView: View {
                     case .lentTo:
                         HStack {
                             Text("I lent to \(debt.name) since")
-                            Text(debt.createdAt, format: .dateTime.year().month(.twoDigits).day(.twoDigits))
+                            Text(
+                                debt.createdAt,
+                                format: .dateTime.year().month(.twoDigits).day(
+                                    .twoDigits
+                                )
+                            )
                         }
                         .font(.body.italic())
                         .opacity(0.5)
@@ -40,7 +63,12 @@ struct DebtDetailView: View {
                     case .borrowedFrom:
                         HStack {
                             Text("I borrowed from \(debt.name) since")
-                            Text(debt.createdAt, format: .dateTime.year().month(.twoDigits).day(.twoDigits))
+                            Text(
+                                debt.createdAt,
+                                format: .dateTime.year().month(.twoDigits).day(
+                                    .twoDigits
+                                )
+                            )
                         }
                         .font(.body.italic())
                         .opacity(0.5)
@@ -61,19 +89,18 @@ struct DebtDetailView: View {
                                 .font(.title)
                                 .foregroundStyle(debt.action.color)
                                 .padding(.bottom, 2)
-                            switch debt.action {
-                            case .lentTo:
-                                Text("Lend More")
-                            case .borrowedFrom:
-                                Text("Borrow More")
-                            }
+                            Text(increaseText)
                         }
                     }
                     .sheet(isPresented: $isIncrement) {
-                        TransactionAddView(currentDebt: debt, transactionAction: .increase)
-                            .presentationDetents([.medium])
+                        TransactionAddView(
+                            title: increaseText,
+                            currentDebt: debt,
+                            transactionAction: .increase
+                        )
+                        .presentationDetents([.medium])
                     }
-                    
+
                     Spacer()
 
                     Button {
@@ -84,17 +111,16 @@ struct DebtDetailView: View {
                                 .font(.title)
                                 .foregroundStyle(debt.action.reversedColor)
                                 .padding(.bottom, 2)
-                            switch debt.action {
-                            case .lentTo:
-                                Text("Receive")
-                            case .borrowedFrom:
-                                Text("Repay")
-                            }
+                            Text(decreaseText)
                         }
                     }
                     .sheet(isPresented: $isDecrement) {
-                        TransactionAddView(currentDebt: debt, transactionAction: .decrease)
-                            .presentationDetents([.medium])
+                        TransactionAddView(
+                            title: decreaseText,
+                            currentDebt: debt,
+                            transactionAction: .decrease
+                        )
+                        .presentationDetents([.medium])
                     }
                     Spacer()
 
@@ -152,25 +178,31 @@ struct DebtDetailView: View {
                             .foregroundStyle(debt.action.color)
                     }
                 }
-            
+
                 ToolbarItemGroup(placement: .topBarTrailing) {
                     Button("Archive", systemImage: "archivebox") {
                         isArchive.toggle()
                     }
-                    .confirmationDialog("Archive this Debt", isPresented: $isArchive) {
+                    .confirmationDialog(
+                        "Archive this Debt",
+                        isPresented: $isArchive
+                    ) {
                         Button("Archive") {
-                            
+
                         }
                         Button("Cancel", role: .cancel) {}
                     }
-                    
+
                     Button("Delete", systemImage: "trash") {
                         isDelete.toggle()
                     }
                     .tint(Color.red)
-                    .confirmationDialog("Delete this Debt", isPresented: $isDelete) {
+                    .confirmationDialog(
+                        "Delete this Debt",
+                        isPresented: $isDelete
+                    ) {
                         Button("Delete", role: .destructive) {
-                            
+
                         }
                         Button("Cancel", role: .cancel) {}
                     }
@@ -181,7 +213,17 @@ struct DebtDetailView: View {
 }
 
 #Preview {
-    DebtDetailView(debt: Debt(action: .lentTo, name: "Bosh", createdAt: Calendar.current.date(byAdding: .day, value: -30, to: Date())!))
+    DebtDetailView(
+        debt: Debt(
+            action: .lentTo,
+            name: "Bosh",
+            createdAt: Calendar.current.date(
+                byAdding: .day,
+                value: -30,
+                to: Date()
+            )!
+        )
+    )
 }
 
 #Preview {

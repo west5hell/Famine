@@ -11,14 +11,15 @@ struct TransactionAddView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var amount: Decimal = 0
     @State private var transactionDate: Date = Date()
-    
+
+    var title: String
     var currentDebt: Debt
     var transactionAction: TransactionAction
-    
+
     var body: some View {
         NavigationStack {
             VStack {
-                Text("Lend More")
+                Text(title)
                     .font(.largeTitle.weight(.heavy))
                 Divider()
                 LabeledContent("Amount") {
@@ -27,7 +28,11 @@ struct TransactionAddView: View {
                 .padding(.vertical)
                 Divider()
                 LabeledContent("Date") {
-                    DatePicker("", selection: $transactionDate, displayedComponents: .date)
+                    DatePicker(
+                        "",
+                        selection: $transactionDate,
+                        displayedComponents: .date
+                    )
                 }
                 .padding(.vertical)
             }
@@ -42,14 +47,19 @@ struct TransactionAddView: View {
                         dismiss()
                     }
                 }
-                
+
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Save") {
-                        let actuallyAmount = transactionAction == .increase ? amount : -amount
-                        
-                        let transaction = Transaction(amount: actuallyAmount, startDate: transactionDate, action: transactionAction)
+                        let actuallyAmount =
+                            transactionAction == .increase ? amount : -amount
+
+                        let transaction = Transaction(
+                            amount: actuallyAmount,
+                            startDate: transactionDate,
+                            action: transactionAction
+                        )
                         currentDebt.appendTransacation(transaction)
-                        
+
                         dismiss()
                     }
                     .foregroundStyle(.white)
@@ -62,5 +72,9 @@ struct TransactionAddView: View {
 }
 
 #Preview {
-    TransactionAddView(currentDebt: Debt(action: .lentTo, name: "Bosh"), transactionAction: .increase)
+    TransactionAddView(
+        title: "Lend More",
+        currentDebt: Debt(action: .lentTo, name: "Bosh"),
+        transactionAction: .increase
+    )
 }
