@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct DebtDetailView: View {
+    @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     @Environment(\.locale) private var locale
 
@@ -17,6 +18,8 @@ struct DebtDetailView: View {
 
     @State private var isArchive = false
     @State private var isDelete = false
+
+    @State private var deleteConfirm = false
 
     var debt: Debt
 
@@ -169,6 +172,14 @@ struct DebtDetailView: View {
                 }
             }
             .navigationTitle(debt.name)
+            .alert("Delete this Debt?", isPresented: $deleteConfirm) {
+                Button("Delete", role: .destructive) {
+                    modelContext.delete(debt)
+
+                    dismiss()
+                }
+                Button("Cancel", role: .cancel) {}
+            }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
@@ -202,7 +213,7 @@ struct DebtDetailView: View {
                         isPresented: $isDelete
                     ) {
                         Button("Delete", role: .destructive) {
-
+                            deleteConfirm.toggle()
                         }
                         Button("Cancel", role: .cancel) {}
                     }
@@ -213,19 +224,51 @@ struct DebtDetailView: View {
 }
 
 #Preview {
-    DebtDetailView(
-        debt: Debt(
-            action: .lentTo,
-            name: "Bosh",
-            createdAt: Calendar.current.date(
-                byAdding: .day,
-                value: -30,
-                to: Date()
-            )!
-        )
+    let levi = Debt(action: .borrowedFrom, name: "Levi")
+    let lent = Transaction(
+        amount: 10_000,
+        startDate: Calendar.current.date(
+            byAdding: .day,
+            value: -10,
+            to: Date()
+        )!
     )
+    levi.appendTransacation(lent)
+    let lentMore = Transaction(
+        amount: 5_000,
+        startDate: Calendar.current.date(
+            byAdding: .day,
+            value: -6,
+            to: Date()
+        )!,
+        action: .increase
+    )
+    levi.appendTransacation(lentMore)
+
+    return DebtDetailView(debt: levi)
 }
 
 #Preview {
-    DebtDetailView(debt: Debt(action: .borrowedFrom, name: "Ellish"))
+    let levi = Debt(action: .lentTo, name: "Levi")
+    let lent = Transaction(
+        amount: 10_000,
+        startDate: Calendar.current.date(
+            byAdding: .day,
+            value: -10,
+            to: Date()
+        )!
+    )
+    levi.appendTransacation(lent)
+    let lentMore = Transaction(
+        amount: 5_000,
+        startDate: Calendar.current.date(
+            byAdding: .day,
+            value: -6,
+            to: Date()
+        )!,
+        action: .increase
+    )
+    levi.appendTransacation(lentMore)
+
+    return DebtDetailView(debt: levi)
 }
