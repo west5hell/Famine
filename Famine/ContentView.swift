@@ -98,20 +98,23 @@ struct ContentView: View {
                         "Add New Debt",
                         isPresented: $addNewDebt,
                         actions: {
-                            Button("Lent To") {
+                            Button("I Lent To …") {
                                 isLentTo.toggle()
                             }
 
-                            Button("Borrowed From") {
+                            Button("I Borrowed From …") {
                                 isBorrowedFrom.toggle()
                             }
 
                             Button("Cancel", role: .cancel) {}
                         }
                     )
-                    .sheet(isPresented: $showSettings, content: {
-                        SettingsView()
-                    })
+                    .sheet(
+                        isPresented: $showSettings,
+                        content: {
+                            SettingsView()
+                        }
+                    )
                     .toolbar {
                         ToolbarItemGroup(placement: .topBarTrailing) {
                             Button("Add", systemImage: "plus") {
