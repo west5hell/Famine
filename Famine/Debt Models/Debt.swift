@@ -68,14 +68,17 @@ extension Debt {
 extension Debt {
     func appendTransacation(_ transaction: Transaction) {
         transaction.debt = self
-        updatedAt = transaction.startDate
         transactions.append(transaction)
+        
+        updatedAt = transactions.compactMap(\.startDate).max() ?? Date()
     }
 
     func removeTransaction(_ transaction: Transaction) {
         transactions.removeAll { item in
             item.transactionID == transaction.transactionID
         }
+        
+        updatedAt = transactions.compactMap(\.startDate).max() ?? Date()
     }
 }
 
