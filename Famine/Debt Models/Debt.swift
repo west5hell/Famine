@@ -125,6 +125,21 @@ extension Transaction {
         }
     }
     
+    var amountColor: Color {
+        switch (action, debt?.action) {
+        case (.increase, .lentTo), (.initial, .lentTo):
+            return Color.lent
+        case (.increase, .borrowedFrom), (.initial, .borrowedFrom):
+            return Color.borrowed
+        case (.decrease, .lentTo):
+            return Color.borrowed
+        case (.decrease, .borrowedFrom):
+            return Color.lent
+        case (_, .none):
+            return .primary
+        }
+    }
+    
     var displayTitle: String {
         switch (self.debt?.action, self.action) {
         case (.lentTo, .initial), (.lentTo, .increase):

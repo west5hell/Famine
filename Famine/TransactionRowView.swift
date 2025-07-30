@@ -33,6 +33,7 @@ struct TransactionRowView: View {
 
             transaction.amountText
                 .font(.headline)
+                .foregroundStyle(transaction.amountColor)
         }
         .padding()
         .background(.regularMaterial)
