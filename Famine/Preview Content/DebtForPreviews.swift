@@ -40,6 +40,9 @@ extension Debt {
 
         for (name, action, amount, dayOffset) in sampleData {
             let debt = Debt(action: action, name: name)
+            if name == "Ivan" {
+                debt.status = .archived
+            }
             let date = Calendar.current.date(byAdding: .day, value: dayOffset, to: Date())!
             let transaction = Transaction(amount: amount, startDate: date)
             debt.appendTransacation(transaction)

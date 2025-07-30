@@ -19,6 +19,7 @@ struct DebtDetailView: View {
     @State private var isArchive = false
     @State private var isDelete = false
 
+    @State private var archiveConfirm = false
     @State private var deleteConfirm = false
 
     var debt: Debt
@@ -189,6 +190,14 @@ struct DebtDetailView: View {
                 }
                 Button("Cancel", role: .cancel) {}
             }
+            .alert("Archive this Debt?", isPresented: $archiveConfirm, actions: {
+                Button("Archive", role: .destructive) {
+                    debt.status = .archived
+
+                    dismiss()
+                }
+                Button("Cancel", role: .cancel) {}
+            })
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
@@ -208,7 +217,7 @@ struct DebtDetailView: View {
                         isPresented: $isArchive
                     ) {
                         Button("Archive") {
-
+                            archiveConfirm.toggle()
                         }
                         Button("Cancel", role: .cancel) {}
                     }

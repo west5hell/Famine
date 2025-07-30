@@ -67,7 +67,7 @@ struct ContentView: View {
                 ScrollView {
                     LazyVStack {
                         ForEach(
-                            debts,
+                            debts.filter { $0.status == .active },
                             content: { debt in
                                 DebtRowView(debt: debt)
                                     .padding(.vertical, 8)

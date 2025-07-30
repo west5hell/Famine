@@ -9,20 +9,24 @@ import SwiftUI
 
 struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
-    
+
     @State private var iCloud = false
 
     var body: some View {
         NavigationStack {
             List {
                 Section {
-                    Label("Archived", systemImage: "archivebox")
+                    NavigationLink {
+                        ArchivedView()
+                    } label: {
+                        Label("Archived", systemImage: "archivebox")
+                    }
                 }
-                
+
                 Section {
                     Toggle("iCloud", isOn: $iCloud)
                 }
-                
+
                 Section {
                     Label("Support", systemImage: "lasso.badge.sparkles")
                     Label("Rating", systemImage: "star")
