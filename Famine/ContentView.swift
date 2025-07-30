@@ -64,65 +64,64 @@ struct ContentView: View {
                 }
                 .padding(16)
 
-                ScrollView {
-                    LazyVStack {
-                        ForEach(
-                            debts.filter { $0.status == .active },
-                            content: { debt in
-                                DebtRowView(debt: debt)
-                                    .padding(.vertical, 8)
-                                    .onTapGesture {
-                                        selectedDebt = debt
-                                    }
-                            }
-                        )
+                List {
+                    ForEach(
+                        debts.filter { $0.status == .active },
+                        content: { debt in
+                            DebtRowView(debt: debt)
+                                .listRowSeparator(.hidden)
+                                .onTapGesture {
+                                    selectedDebt = debt
+                                }
+                        }
+                    )
+                }
+                .listStyle(.plain)
+                .sheet(item: $selectedDebt) { debt in
+                    DebtDetailView(debt: debt)
+                }
+                .sheet(
+                    isPresented: $isLentTo,
+                    content: {
+                        DebtAddView(debtAction: .lentTo)
+                            .presentationDetents([.medium])
                     }
-                    .sheet(item: $selectedDebt) { debt in
-                        DebtDetailView(debt: debt)
+                )
+                .sheet(
+                    isPresented: $isBorrowedFrom,
+                    content: {
+                        DebtAddView(debtAction: .borrowedFrom)
+                            .presentationDetents([.medium])
                     }
-                    .sheet(
-                        isPresented: $isLentTo,
-                        content: {
-                            DebtAddView(debtAction: .lentTo)
-                                .presentationDetents([.medium])
+                )
+                .confirmationDialog(
+                    "Add New Debt",
+                    isPresented: $addNewDebt,
+                    actions: {
+                        Button("I Lent To …") {
+                            isLentTo.toggle()
                         }
-                    )
-                    .sheet(
-                        isPresented: $isBorrowedFrom,
-                        content: {
-                            DebtAddView(debtAction: .borrowedFrom)
-                                .presentationDetents([.medium])
-                        }
-                    )
-                    .confirmationDialog(
-                        "Add New Debt",
-                        isPresented: $addNewDebt,
-                        actions: {
-                            Button("I Lent To …") {
-                                isLentTo.toggle()
-                            }
 
-                            Button("I Borrowed From …") {
-                                isBorrowedFrom.toggle()
-                            }
+                        Button("I Borrowed From …") {
+                            isBorrowedFrom.toggle()
+                        }
 
-                            Button("Cancel", role: .cancel) {}
+                        Button("Cancel", role: .cancel) {}
+                    }
+                )
+                .sheet(
+                    isPresented: $showSettings,
+                    content: {
+                        SettingsView()
+                    }
+                )
+                .toolbar {
+                    ToolbarItemGroup(placement: .topBarTrailing) {
+                        Button("Add", systemImage: "plus") {
+                            addNewDebt.toggle()
                         }
-                    )
-                    .sheet(
-                        isPresented: $showSettings,
-                        content: {
-                            SettingsView()
-                        }
-                    )
-                    .toolbar {
-                        ToolbarItemGroup(placement: .topBarTrailing) {
-                            Button("Add", systemImage: "plus") {
-                                addNewDebt.toggle()
-                            }
-                            Button("Setting", systemImage: "gearshape") {
-                                showSettings.toggle()
-                            }
+                        Button("Setting", systemImage: "gearshape") {
+                            showSettings.toggle()
                         }
                     }
                 }

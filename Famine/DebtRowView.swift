@@ -46,7 +46,6 @@ struct DebtRowView: View {
         .background(.regularMaterial)
         .clipShape(.rect(cornerRadius: 10))
         .shadow(radius: 1)
-        .padding(.horizontal)
     }
 
 }
