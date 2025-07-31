@@ -16,6 +16,7 @@ struct DebtDetailView: View {
     @State private var isDecrement = false
     @State private var payOff = false
 
+    @State private var isRestore = false
     @State private var isArchive = false
     @State private var isDelete = false
 
@@ -83,77 +84,19 @@ struct DebtDetailView: View {
                 .foregroundStyle(debt.action.color)
                 .font(.largeTitle.bold())
                 .padding(.leading, 16)
-
-                HStack {
-                    Button {
-                        isIncrement.toggle()
-                    } label: {
-                        VStack {
-                            Image(systemName: "arrowshape.up.fill")
-                                .font(.title)
-                                .foregroundStyle(debt.action.color)
-                                .padding(.bottom, 2)
-                            Text(increaseText)
-                        }
-                    }
-                    .sheet(isPresented: $isIncrement) {
-                        TransactionAddView(
-                            title: increaseText,
-                            currentDebt: debt,
-                            transactionAction: .increase
-                        )
-                        .presentationDetents([.medium])
-                    }
-
-                    Spacer()
-
-                    Button {
-                        isDecrement.toggle()
-                    } label: {
-                        VStack {
-                            Image(systemName: "arrowshape.down")
-                                .font(.title)
-                                .foregroundStyle(debt.action.reversedColor)
-                                .padding(.bottom, 2)
-                            Text(decreaseText)
-                        }
-                    }
-                    .sheet(isPresented: $isDecrement) {
-                        TransactionAddView(
-                            title: decreaseText,
-                            currentDebt: debt,
-                            transactionAction: .decrease
-                        )
-                        .presentationDetents([.medium])
-                    }
-                    Spacer()
-
-                    Button {
-                        payOff = true
-                    } label: {
-                        VStack {
-                            Image(systemName: "checkmark.circle.fill")
-                                .font(.title)
-                                .padding(.bottom, 2)
-                            Text("Pay Off")
-                        }
-                    }
-                    .confirmationDialog(
-                        "Pay Off Entire Debt",
-                        isPresented: $payOff
-                    ) {
-                        Button("Pay Off Entire Debt") {
-
-                        }
-                        Button("Cancel", role: .cancel) {}
-                    }
+                
+                if debt.isActive {
+                    DebtDetailButtonsView(
+                        isIncrement: $isIncrement,
+                        isDecrement: $isDecrement,
+                        payOff: $payOff,
+                        debt: debt,
+                        increaseText: increaseText,
+                        decreaseText: decreaseText
+                    )
                 }
-                .font(.title3)
-                .foregroundStyle(Color.primary)
-                .padding()
-                .background(.regularMaterial)
-                .clipShape(.rect(cornerRadius: 10))
-                .padding()
+                
+                Divider()
 
                 Text("History")
                     .font(.largeTitle.bold())
@@ -166,7 +109,7 @@ struct DebtDetailView: View {
                         TransactionRowView(transaction: transaction)
                             .listRowSeparator(.hidden)
                             .swipeActions(edge: .trailing) {
-                                if transaction.action != .initial {
+                                if debt.isActive && transaction.action != .initial {
                                     Button(role: .destructive) {
                                         debt.removeTransaction(transaction)
                                     } label: {
@@ -209,17 +152,34 @@ struct DebtDetailView: View {
                 }
 
                 ToolbarItemGroup(placement: .topBarTrailing) {
-                    Button("Archive", systemImage: "archivebox") {
-                        isArchive.toggle()
-                    }
-                    .confirmationDialog(
-                        "Archive this Debt",
-                        isPresented: $isArchive
-                    ) {
-                        Button("Archive") {
-                            archiveConfirm.toggle()
+                    if debt.isActive {
+                        Button("Archive", systemImage: "archivebox") {
+                            isArchive.toggle()
                         }
-                        Button("Cancel", role: .cancel) {}
+                        .confirmationDialog(
+                            "Archive this Debt",
+                            isPresented: $isArchive
+                        ) {
+                            Button("Archive") {
+                                archiveConfirm.toggle()
+                            }
+                            Button("Cancel", role: .cancel) {}
+                        }
+                    } else {
+                        Button("Restore", systemImage: "tray.and.arrow.up.fill") {
+                            isRestore.toggle()
+                        }
+                        .alert("Restore this Debt?", isPresented: $isRestore) {
+                            Button("Cancel", role: .cancel) {}
+                            
+                            Button("Restore") {
+                                if debt.isArchived {
+                                    debt.status = .active
+                                } else if debt.isPaidoff {
+                                    
+                                }
+                            }
+                        }
                     }
 
                     Button("Delete", systemImage: "trash") {
@@ -242,7 +202,7 @@ struct DebtDetailView: View {
 }
 
 #Preview("borrow") {
-    let levi = Debt(action: .borrowedFrom, name: "Levi")
+    let levi = Debt(action: .borrowedFrom, name: "Levi", status: .archived)
     let lent = Transaction(
         amount: 10_000,
         startDate: Calendar.current.date(
