@@ -63,6 +63,18 @@ extension Debt {
         
         return sorted
     }
+    
+    var isActive: Bool {
+        status == .active
+    }
+    
+    var isPaidoff: Bool {
+        status == .paidoff
+    }
+    
+    var isArchived: Bool {
+        status == .archived
+    }
 }
 
 extension Debt {
@@ -79,6 +91,29 @@ extension Debt {
         }
         
         updatedAt = transactions.compactMap(\.startDate).max() ?? Date()
+    }
+    
+    func paidoff() {
+        let transaction = Transaction(
+            amount: currentAmount,
+            startDate: Date(),
+            action: .decrease
+        )
+        
+        appendTransacation(transaction)
+        
+        status = .paidoff
+    }
+    
+    func restorePaidoff() {
+        if !isPaidoff {
+            return
+        }
+        
+        if let lastesTransaction = transactions.max(by: { $0.startDate > $1.startDate }) {
+            removeTransaction(lastesTransaction)
+            status = .active
+        }
     }
 }
 
