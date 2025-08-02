@@ -56,7 +56,7 @@ struct DebtDetailView: View {
                         HStack {
                             Text("I lent to \(debt.name) since")
                             Text(
-                                debt.createdAt,
+                                debt.initialDate,
                                 format: .dateTime.year().month(.twoDigits).day(
                                     .twoDigits
                                 )
@@ -69,7 +69,7 @@ struct DebtDetailView: View {
                         HStack {
                             Text("I borrowed from \(debt.name) since")
                             Text(
-                                debt.createdAt,
+                                debt.initialDate,
                                 format: .dateTime.year().month(.twoDigits).day(
                                     .twoDigits
                                 )
@@ -176,7 +176,7 @@ struct DebtDetailView: View {
                                 if debt.isArchived {
                                     debt.status = .active
                                 } else if debt.isPaidoff {
-                                    
+                                    debt.restorePaidoff()
                                 }
                             }
                         }
