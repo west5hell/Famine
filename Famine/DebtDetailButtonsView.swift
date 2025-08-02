@@ -76,7 +76,7 @@ struct DebtDetailButtonsView: View {
                 isPresented: $payOff
             ) {
                 Button("Pay Off Entire Debt") {
-
+                    debt.paidoff()
                 }
                 Button("Cancel", role: .cancel) {}
             }
