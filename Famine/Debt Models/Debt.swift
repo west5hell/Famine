@@ -50,6 +50,13 @@ extension Debt {
         transactions.compactMap(\.startDate).max() ?? createdAt
     }
     
+    var initialDate: Date {
+        if let initial = sortedTransactions.first(where: { $0.action == .initial }) {
+            return initial.startDate
+        }
+        return createdAt
+    }
+    
     var sortedTransactions: [Transaction] {
         let sorted = transactions.sorted(by: { $0.startDate > $1.startDate })
         
@@ -95,7 +102,7 @@ extension Debt {
     
     func paidoff() {
         let transaction = Transaction(
-            amount: currentAmount,
+            amount: -currentAmount,
             startDate: Date(),
             action: .decrease
         )
@@ -110,8 +117,8 @@ extension Debt {
             return
         }
         
-        if let lastesTransaction = transactions.max(by: { $0.startDate > $1.startDate }) {
-            removeTransaction(lastesTransaction)
+        if let lastestTransaction = sortedTransactions.first {
+            removeTransaction(lastestTransaction)
             status = .active
         }
     }
