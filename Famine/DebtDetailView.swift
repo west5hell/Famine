@@ -152,6 +152,14 @@ struct DebtDetailView: View {
                 }
 
                 ToolbarItemGroup(placement: .topBarTrailing) {
+                    NavigationLink {
+                        DebtFolderView()
+                            .navigationTitle("Debt Files")
+                            .navigationBarTitleDisplayMode(.inline)
+                    } label: {
+                        Label("Files", systemImage: "folder.fill")
+                    }
+                    
                     if debt.isActive {
                         Button("Archive", systemImage: "archivebox") {
                             isArchive.toggle()
