@@ -9,7 +9,28 @@ import SwiftUI
 
 struct DebtFolderView: View {
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        Form {
+            Section {
+                NavigationLink("Photos") {
+                    
+                }
+            } header: {
+                Text("Photos")
+            }
+
+            Section {
+                Text("Files")
+            } header: {
+                Text("Files")
+            }
+            
+            Section {
+                Text("Records")
+            } header: {
+                Text("Records")
+            }
+        }
+        .headerProminence(.increased)
     }
 }
 
