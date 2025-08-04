@@ -22,6 +22,7 @@ struct DebtDetailView: View {
 
     @State private var archiveConfirm = false
     @State private var deleteConfirm = false
+    @State private var showTransaction = false
 
     var debt: Debt
 
@@ -118,13 +119,17 @@ struct DebtDetailView: View {
                                 }
                             }
                             .onTapGesture {
-
+                                showTransaction.toggle()
                             }
                     }
                 }
                 .listStyle(.plain)
             }
             .navigationTitle(debt.name)
+            .sheet(isPresented: $showTransaction, content: {
+//                TransactionView()
+//                    .presentationDetents([.medium])
+            })
             .alert("Delete this Debt?", isPresented: $deleteConfirm) {
                 Button("Delete", role: .destructive) {
                     modelContext.delete(debt)
