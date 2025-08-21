@@ -13,33 +13,29 @@ struct PhotosView: View {
 
     @State private var selectedItems: [PhotosPickerItem] = []
     @State private var selectedImages: [Image] = []
-    @State private var seenItemIDs = Set<String>()  // track duplicates
 
     var body: some View {
         NavigationStack {
             Group {
                 if selectedImages.isEmpty {
-                    ContentUnavailableView {
-                        Label(
-                            "No Photos",
-                            systemImage: "photo.on.rectangle.angled"
-                        )
-                    } description: {
-                        Text("You don't have any photos yet.")
-                    } actions: {
-                        PhotosPicker(
-                            "Select Photos",
-                            selection: $selectedItems,
-                            matching: .images
-                        )
-                        .onChange(of: selectedItems, loadImages)
-                    }
+                    ContentUnavailableView(
+                        label: {
+                            Label(
+                                "No Photos",
+                                systemImage: "photo.on.rectangle.angled"
+                            )
+                        },
+                        description: {
+                            Text("You don't have any photos yet.")
+                        },
+                        actions: {
+                            photoPicker(label: "Select Photos")
+                        }
+                    )
                 } else {
                     ScrollView {
-                        LazyVGrid(columns: [GridItem(.adaptive(minimum: 100))])
-                        {
-                            ForEach(selectedImages.indices, id: \.self) {
-                                index in
+                        LazyVGrid(columns: [GridItem(.adaptive(minimum: 100))]) {
+                            ForEach(selectedImages.indices, id: \.self) { index in
                                 selectedImages[index]
                                     .resizable()
                                     .scaledToFit()
@@ -61,39 +57,43 @@ struct PhotosView: View {
                         Label("Dismiss", systemImage: "chevron.down")
                     }
                 }
-
+                
                 if !selectedImages.isEmpty {
                     ToolbarItem(placement: .topBarTrailing) {
-                        PhotosPicker(
-                            selection: $selectedItems,
-                            matching: .images
-                        ) {
-                            Label("Add images", systemImage: "plus")
-                        }
-                        .onChange(of: selectedItems, loadImages)
+                        photoPicker(label: "Add Images", systemImage: "plus")
                     }
                 }
             }
         }
     }
 
-    // MARK: - Helpers
-    @MainActor
-    private func loadImages(
-        from oldItems: [PhotosPickerItem],
-        to newItems: [PhotosPickerItem]
-    ) {
-        Task {
-            var newImages: [Image] = []
-            for item in newItems {
-                if let data = try? await item.loadTransferable(type: Data.self),
-                    let uiImage = UIImage(data: data)
-                {
-                    newImages.append(Image(uiImage: uiImage))
-                }
+    // MARK: - Shared PhotosPicker builder
+    private func photoPicker(label: String, systemImage: String? = nil) -> some View {
+        PhotosPicker(selection: $selectedItems, matching: .images) {
+            if let systemImage {
+                Label(label, systemImage: systemImage)
+            } else {
+                Text(label)
             }
-            selectedImages = newImages
         }
+        .onChange(of: selectedItems) { _, newItems in
+            Task {
+                selectedImages = await loadImages(from: newItems)
+            }
+        }
+    }
+
+    // MARK: - Image loader
+    @MainActor
+    private func loadImages(from items: [PhotosPickerItem]) async -> [Image] {
+        var images: [Image] = []
+        for item in items {
+            if let data = try? await item.loadTransferable(type: Data.self),
+               let uiImage = UIImage(data: data) {
+                images.append(Image(uiImage: uiImage))
+            }
+        }
+        return images
     }
 }
 
