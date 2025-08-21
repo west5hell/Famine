@@ -13,7 +13,7 @@ struct PhotosView: View {
 
     @State private var selectedItems: [PhotosPickerItem] = []
     @State private var selectedImages: [Image] = []
-    @State private var isPickerPresented = false
+    @State private var seenItemIDs = Set<String>()  // track duplicates
 
     var body: some View {
         NavigationStack {
@@ -32,28 +32,14 @@ struct PhotosView: View {
                             selection: $selectedItems,
                             matching: .images
                         )
-                        .onChange(of: selectedItems) { oldValue, newValue in
-                            Task {
-                                selectedImages = []
-                                for item in newValue {
-                                    if let data =
-                                        try? await item.loadTransferable(
-                                            type: Data.self
-                                        ), let uiImage = UIImage(data: data)
-                                    {
-                                        selectedImages.append(
-                                            Image(uiImage: uiImage)
-                                        )
-                                    }
-                                }
-                            }
-                        }
+                        .onChange(of: selectedItems, loadImages)
                     }
                 } else {
                     ScrollView {
                         LazyVGrid(columns: [GridItem(.adaptive(minimum: 100))])
                         {
-                            ForEach(selectedImages.indices, id: \.self) { index in
+                            ForEach(selectedImages.indices, id: \.self) {
+                                index in
                                 selectedImages[index]
                                     .resizable()
                                     .scaledToFit()
@@ -63,24 +49,50 @@ struct PhotosView: View {
                                     )
                             }
                         }
+                        .padding()
                     }
                 }
             }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    Button("dismiss", systemImage: "chevron.down") {
+                    Button {
                         dismiss()
+                    } label: {
+                        Label("Dismiss", systemImage: "chevron.down")
                     }
                 }
-                
+
                 if !selectedImages.isEmpty {
                     ToolbarItem(placement: .topBarTrailing) {
-                        Button("Add", systemImage: "plus") {
-                            
+                        PhotosPicker(
+                            selection: $selectedItems,
+                            matching: .images
+                        ) {
+                            Label("Add images", systemImage: "plus")
                         }
+                        .onChange(of: selectedItems, loadImages)
                     }
                 }
             }
+        }
+    }
+
+    // MARK: - Helpers
+    @MainActor
+    private func loadImages(
+        from oldItems: [PhotosPickerItem],
+        to newItems: [PhotosPickerItem]
+    ) {
+        Task {
+            var newImages: [Image] = []
+            for item in newItems {
+                if let data = try? await item.loadTransferable(type: Data.self),
+                    let uiImage = UIImage(data: data)
+                {
+                    newImages.append(Image(uiImage: uiImage))
+                }
+            }
+            selectedImages = newImages
         }
     }
 }
