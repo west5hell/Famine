@@ -38,11 +38,12 @@ struct PhotosView: View {
                             ForEach(selectedImages.indices, id: \.self) { index in
                                 selectedImages[index]
                                     .resizable()
-                                    .scaledToFit()
+                                    .aspectRatio(contentMode: .fill)
                                     .frame(width: 100, height: 100)
                                     .clipShape(
                                         RoundedRectangle(cornerRadius: 8)
                                     )
+                                    .shadow(radius: 2)
                             }
                         }
                         .padding()
